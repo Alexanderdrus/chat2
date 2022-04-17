@@ -11,6 +11,7 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
+import ru.gb.gbchat2.Command;
 
 public class Controller {
 
@@ -56,7 +57,7 @@ public class Controller {
     }
 
     public void btnAuthClick(ActionEvent actionEvent) {
-        client.sendMessage("/auth " + loginField.getText() + " " + passwordField.getText());
+        client.sendMessage(Command.AUTH,loginField.getText(),passwordField.getText());
     }
 
     public void setAuth(boolean success) {
@@ -79,4 +80,10 @@ public class Controller {
         }
     }
 
+    public void showError(String[] error) {
+        final Alert alert = new Alert(Alert.AlertType.ERROR, error[0], new ButtonType
+                ("ОК", ButtonBar.ButtonData.OK_DONE));
+        alert.setTitle("Ошибка!");
+        alert.showAndWait();
+    }
 }
