@@ -1,5 +1,8 @@
 package ru.gb.gbchat2.client;
 
+import javafx.application.Platform;
+import ru.gb.gbchat2.Command;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -41,9 +44,18 @@ public class ChatClient {
         while (true) {
             final String message = in.readUTF();
             System.out.println("Receive message: " + message);
-            if ("/end".equals(message)) {
-                controller.setAuth(false);
-                break;
+            if(Command.isCommand(message)){
+                final Command command = Command.getCommand(message);
+                final String[] params = command.parse(message);
+
+                if (command == Command.END) {
+                    controller.setAuth(false);
+                    break;
+                }
+                if(command == Command.ERROR){
+                    Platform.runLater(()-> controller.showError(params));
+                    continue;
+                }
             }
             controller.addMessage(message);
         }
@@ -52,12 +64,18 @@ public class ChatClient {
     private void waitAuthenticate() throws IOException {
         while (true) {
             final String msgAuth = in.readUTF();
-            if (msgAuth.startsWith("/authok")) {
-                final String[] split = msgAuth.split(" ");
-                final String nick = split[1];
-                controller.addMessage("Успешная авторизация под ником " + nick);
-                controller.setAuth(true);
-                break;
+            if(Command.isCommand(msgAuth)){
+                final Command command = Command.getCommand(msgAuth);
+                final String[] params = command.parse(msgAuth);
+                    if (command == command.AUTHOK) {
+                    final String nick = params[0];
+                    controller.addMessage("Успешная авторизация под ником " + nick);
+                    controller.setAuth(true);
+                    break;
+                }
+                if(command == Command.ERROR){
+                   Platform.runLater(() -> controller.showError(params));
+                }
             }
         }
     }
@@ -94,5 +112,10 @@ public class ChatClient {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void sendMessage(Command command, String... params) {
+        sendMessage(command.collectMessage(params));
+
     }
 }
