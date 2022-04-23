@@ -68,6 +68,7 @@ public class ClientHandler {
 
     private void authenticate() {
         while (true) {
+            AuthTimer.set(this);
             try {
                 final String str = in.readUTF();
                 if(Command.isCommand(str)){
@@ -86,6 +87,7 @@ public class ClientHandler {
                         sendMessage(Command.AUTHOK, nick);
                         this.nick = nick;
                         server.broadcast("Пользователь " + nick + " зашел в чат");
+                        AuthTimer.unset(this);
                         server.subscribe(this);
                         break;
                     } else {
@@ -124,7 +126,7 @@ public class ClientHandler {
                     if (command == Command.END ) {
                         break;
                     }
-                    if(command == Command.PRIVATE_MASSAGE){
+                    if(command == Command.PRIVATE_MESSAGE){
                         server.sendMessageToClient(this,params[0],params[1]);
                         continue;
                     }
@@ -138,5 +140,12 @@ public class ClientHandler {
 
     public String getNick() {
         return nick;
+    }
+    public void closeSocket() {
+        try {
+            socket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
