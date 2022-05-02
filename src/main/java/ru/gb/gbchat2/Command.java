@@ -21,7 +21,7 @@ public enum Command {
         }
     },
 
-    PRIVATE_MASSAGE("/w"){
+    PRIVATE_MESSAGE("/w"){
         @Override
         public String[] parse(String commandText) {  //  /w nick1 Текст сообщения для пользователя
             final String[] split = commandText.split(COMMAND_DELIMETR);
