@@ -1,5 +1,6 @@
 package ru.gb.gbchat2.client;
 
+import java.io.*;
 import java.util.Optional;
 
 import javafx.event.ActionEvent;
@@ -54,6 +55,11 @@ public class Controller {
 
     public void addMessage(String message) {
         textArea.appendText(message + "\n");
+        try {
+            SaveHistory();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void btnAuthClick(ActionEvent actionEvent) {
@@ -77,6 +83,22 @@ public class Controller {
         final Boolean isExit = buttonType.map(btn -> btn.getButtonData().isCancelButton()).orElse(false);
         if (isExit) {
             System.exit(0);
+        }
+    }
+
+    private void SaveHistory() throws IOException {
+        try {
+            File chathistory = new File("chat_history.txt");
+            if (!chathistory.exists()) {
+                chathistory.createNewFile();
+            }
+            PrintWriter fileWriter = new PrintWriter(new FileWriter(chathistory, false));
+            BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+            bufferedWriter.write(textArea.getText());
+            bufferedWriter.close();
+
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 

@@ -109,6 +109,7 @@ public class ChatClient {
         try {
             System.out.println("Send message: " + message);
             out.writeUTF(message);
+
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -118,4 +119,5 @@ public class ChatClient {
         sendMessage(command.collectMessage(params));
 
     }
+
 }
